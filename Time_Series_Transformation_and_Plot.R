@@ -5,10 +5,10 @@ library(lubridate)
 library(ggplot2)
 library(plotly)
 
+#import data
+inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
-inflation_data <- read.csv("C:/Users/jacob/OneDrive - Drake University/STAT 260 Group 3 Shared Folder/R-Data/City_Inflation_Differences.csv")
-
-# Determine the most recent year and filter for the last 14 years
+# Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
 inflation_data_filtered <- inflation_data |>
   filter(Year > (max_year - 14))
@@ -51,9 +51,11 @@ time_series_plot <- ggplot(inflation_long, aes(x = Date)) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+#save png
 ggsave("inflation_comparison_hires.png", plot = time_series_plot, width = 12, height = 8, dpi = 300)
 
+# Convert in plotlty and save as an HTML file
 time_series_plot_interactive <- ggplotly(time_series_plot)
-
-# Save as an HTML file
 htmlwidgets::saveWidget(time_series_plot_interactive, "inflation_comparison_interactive.html")
+
+cor.test(egg_inflation_diff_ts, overall_inflation_ts, method = "spearman")
