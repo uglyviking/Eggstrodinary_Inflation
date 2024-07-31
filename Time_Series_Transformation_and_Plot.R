@@ -1,0 +1,59 @@
+# Your existing code with modifications
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+
+
+inflation_data <- read.csv("C:/Users/jacob/OneDrive - Drake University/STAT 260 Group 3 Shared Folder/R-Data/City_Inflation_Differences.csv")
+
+# Determine the most recent year and filter for the last 14 years
+max_year <- max(inflation_data$Year)
+inflation_data_filtered <- inflation_data |>
+  filter(Year > (max_year - 14))
+
+# Reshape the filtered data
+inflation_long <- inflation_data_filtered |>
+  pivot_longer(
+    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
+    names_to = c("Month", ".value"),
+    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
+  ) |>
+  rename(
+    Overall_Inflation = Percentage_Change,
+    Egg_Inflation_Dif = Egg_Inflation_Dif
+  ) |>
+  mutate(
+    Month = match(Month, month.abb),
+    Date = ymd(paste(Year, Month, "01"))
+  ) |>
+  arrange(Date)
+
+# Create separate time series for overall inflation and egg inflation difference
+overall_inflation_ts <- ts(inflation_long$Overall_Inflation, 
+                           start = c(min(inflation_long$Year), 1), 
+                           end = c(max(inflation_long$Year), 12), 
+                           frequency = 12)
+
+egg_inflation_diff_ts <- ts(inflation_long$Egg_Inflation_Dif, 
+                            start = c(min(inflation_long$Year), 1), 
+                            end = c(max(inflation_long$Year), 12), 
+                            frequency = 12)
+
+# Plot both time series using ggplot2
+time_series_plot <- ggplot(inflation_long, aes(x = Date)) +
+  geom_line(aes(y = Overall_Inflation, color = "Overall Inflation")) +
+  geom_line(aes(y = Egg_Inflation_Dif, color = "Egg Inflation Difference")) +
+  labs(title = "Comparison of Overall Inflation and Egg Inflation Difference (Last 14 Years)", 
+       y = "Percentage Change", 
+       color = "Measure") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("inflation_comparison_hires.png", plot = time_series_plot, width = 12, height = 8, dpi = 300)
+
+time_series_plot_interactive <- ggplotly(time_series_plot)
+
+# Save as an HTML file
+htmlwidgets::saveWidget(time_series_plot_interactive, "inflation_comparison_interactive.html")
