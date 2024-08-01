@@ -1,12 +1,23 @@
-# Your existing code with modifications
+---
+title: "Normality test"
+output: html_document
+date: "2024-08-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
 library(tidyr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(plotly)
+```
 
-#import data
-inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
+## Normality Tests
+
+```{r data-processing, include=FALSE}
+inflation_data <- read.csv("C:/Users/jacob/Documents/Eggstrodinary_Inflation/Data/City_Inflation_Differences.csv") 
 
 #remove NA values
 inflation_data <- inflation_data |>
@@ -97,7 +108,16 @@ histogram_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(x = Egg
   theme_minimal() +
   labs(title = "Histogram of Egg Inflation (Outliers Removed)")
 
+shapiro_test_original <- shapiro.test(inflation_long$Overall_Inflation)
+shapiro_test_no_outliers <- shapiro.test(inflation_long_no_outliers$Overall_Inflation_no_outliers)
+shapiro_test_egg_original <- shapiro.test(inflation_long$Egg_Inflation_Dif)
+shapiro_test_egg_no_outliers <- shapiro.test(inflation_long__egg_no_outliers$Egg_Inflation_Dif_no_outliers)
+
+```
+
 # Display plots
+
+```{r plots}
 print(qqplot_original)
 print(qqplot_no_outliers)
 print(histogram_original)
@@ -107,14 +127,13 @@ print(qqplot_egg_original)
 print(qqplot_egg_no_outliers)
 print(histogram_egg_original)
 print(histogram_egg_no_outliers)
+```
 
 # Shapiro-Wilk test for normality
-shapiro_test_original <- shapiro.test(inflation_long$Overall_Inflation)
-shapiro_test_no_outliers <- shapiro.test(inflation_long_no_outliers$Overall_Inflation_no_outliers)
-shapiro_test_egg_original <- shapiro.test(inflation_long$Egg_Inflation_Dif)
-shapiro_test_egg_no_outliers <- shapiro.test(inflation_long__egg_no_outliers$Egg_Inflation_Dif_no_outliers)
 
+```{r tests}
 print(shapiro_test_original)
 print(shapiro_test_no_outliers)
 print(shapiro_test_egg_original)
 print(shapiro_test_egg_no_outliers)
+```
