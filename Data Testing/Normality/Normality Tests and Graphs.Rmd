@@ -1,6 +1,6 @@
 ---
 title: "Normality test"
-output: html_document
+output: rmarkdown::github_document
 date: "2024-08-01"
 ---
 
