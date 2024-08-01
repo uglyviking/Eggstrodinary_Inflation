@@ -36,13 +36,11 @@ inflation_long <- inflation_data_filtered |>
 
 overall_inflation_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Overall_Inflation)) +
   geom_point() +  # Add points
-  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add linear regression line
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "red")
 
 egg_inflation_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Egg_Inflation_Dif)) +
   geom_point() +  # Add points
-  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add linear regression line
-  theme_minimal()
+  geom_smooth(method = "lm", se = FALSE, color = "red")
 
 ggsave("overall_inflation_scatterplot.png", plot = overall_inflation_scatterplot, width = 12, height = 8, dpi = 300)
 ggsave("egg_inflation_scatterplot.png", plot = egg_inflation_scatterplot, width = 12, height = 8, dpi = 300)
