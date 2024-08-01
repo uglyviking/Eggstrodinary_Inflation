@@ -54,7 +54,7 @@ adf.test(inflation_long$Overall_Inflation)
 time_series_plot <- ggplot(inflation_long, aes(x = Date)) +
   geom_line(aes(y = Overall_Inflation, color = "Overall Inflation")) +
   geom_line(aes(y = Egg_Inflation_Dif, color = "Egg Inflation Difference")) +
-  labs(title = "Comparison of Overall Inflation and Egg Inflation Difference (Last 10 Years)", 
+  labs(title = "Comparison of Overall Inflation and Egg Inflation Difference (Last 4 Years)", 
        y = "Percentage Change", 
        color = "Measure") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +

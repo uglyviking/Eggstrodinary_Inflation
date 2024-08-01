@@ -8,6 +8,10 @@ library(plotly)
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
+#remove NA values
+inflation_data <- inflation_data |>
+  na.omit()
+
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
 inflation_data_filtered <- inflation_data |>
@@ -30,12 +34,16 @@ inflation_long <- inflation_data_filtered |>
   ) |>
   arrange(Date)
 
-ggplot(inflation_long, aes(x = Date, y = Overall_Inflation)) +
+overall_inflation_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Overall_Inflation)) +
   geom_point() +  # Add points
   geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add linear regression line
   theme_minimal()
 
-ggplot(inflation_long, aes(x = Date, y = Egg_Inflation_Dif)) +
+egg_inflation_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Egg_Inflation_Dif)) +
   geom_point() +  # Add points
   geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add linear regression line
   theme_minimal()
+
+ggsave("overall_inflation_scatterplot.png", plot = overall_inflation_scatterplot, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_scatterplot.png", plot = egg_inflation_scatterplot, width = 12, height = 8, dpi = 300)
+
