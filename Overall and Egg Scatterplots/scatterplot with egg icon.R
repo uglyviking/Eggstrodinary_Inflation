@@ -36,7 +36,7 @@ egg_path <- "Assets/egg_solid_yellow.svg"
 
 # Update your ggplot code
 egg_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Egg_Inflation_Dif)) +
-  geom_image(aes(image = egg_path), size = 0.01, dpi = 300, na.rm = TRUE) +
+  geom_image(aes(image = egg_path), size = 0.01, na.rm = TRUE) +
   geom_smooth(method = "lm", se = FALSE, color = "black", na.rm = TRUE) +
   labs(title = "Egg Inflation Difference Over Time",
        x = "Date",
