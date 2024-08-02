@@ -9,9 +9,7 @@ library(tseries)
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
-#remove NA values
-inflation_data <- inflation_data |>
-  na.omit()
+
 
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
@@ -34,6 +32,14 @@ inflation_long <- inflation_data_filtered |>
     Date = ymd(paste(Year, Month, "01"))
   ) |>
   arrange(Date)
+
+inflation_long <- inflation_long |>
+  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
+
 
 # Create separate time series for overall inflation and egg inflation difference
 overall_inflation_ts <- ts(inflation_long$Overall_Inflation, 
@@ -59,6 +65,7 @@ time_series_plot <- ggplot(inflation_long, aes(x = Date)) +
        color = "Measure") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 
 #save png
