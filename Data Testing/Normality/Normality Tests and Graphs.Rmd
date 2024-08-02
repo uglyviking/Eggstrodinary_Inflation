@@ -14,14 +14,9 @@ library(ggplot2)
 library(plotly)
 ```
 
-## Normality Tests
-
 ```{r data-processing, include=FALSE}
 inflation_data <- read.csv("C:/Users/jacob/Documents/Eggstrodinary_Inflation/Data/City_Inflation_Differences.csv") 
 
-#remove NA values
-inflation_data <- inflation_data |>
-  na.omit()
 
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
@@ -45,6 +40,12 @@ inflation_long <- inflation_data_filtered |>
   ) |>
   arrange(Date)
 
+inflation_long <- inflation_long |>
+  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
 
 remove_outliers <- function(x, na.rm = TRUE, ...) {
   qnt <- quantile(x, probs=c(.25, .75), na.rm = na.rm, ...)
@@ -115,25 +116,42 @@ shapiro_test_egg_no_outliers <- shapiro.test(inflation_long__egg_no_outliers$Egg
 
 ```
 
-# Display plots
+## Overall Inflation Plots
 
-```{r plots}
+```{r plots, echo=FALSE}
 print(qqplot_original)
 print(qqplot_no_outliers)
 print(histogram_original)
 print(histogram_no_outliers)
+```
 
+## Egg Inflation Plots
+
+```{r egg inflation plots, echo=FALSE}
 print(qqplot_egg_original)
 print(qqplot_egg_no_outliers)
 print(histogram_egg_original)
 print(histogram_egg_no_outliers)
 ```
 
-# Shapiro-Wilk test for normality
+## Shapiro-Wilk test for normality
+### Original Overall
 
-```{r tests}
+```{r ORIGINAL, echo=FALSE}
 print(shapiro_test_original)
+```
+
+### Original No Outliers
+```{r NO_OUTLIERS, echo=FALSE}
 print(shapiro_test_no_outliers)
+```
+
+### Original Egg Inflation
+```{r egg inflation, echo=FALSE}
 print(shapiro_test_egg_original)
+```
+
+###  Egg Inflation No Outliers
+```{r egg inflation no outliers, echo=FALSE}
 print(shapiro_test_egg_no_outliers)
 ```
