@@ -3,14 +3,11 @@ library(tidyr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
-library(plotly)
+
 
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
-#remove NA values
-inflation_data <- inflation_data |>
-  na.omit()
 
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
@@ -33,6 +30,13 @@ inflation_long <- inflation_data_filtered |>
     Date = ymd(paste(Year, Month, "01"))
   ) |>
   arrange(Date)
+
+inflation_long <- inflation_long |>
+  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
 
 
 remove_outliers <- function(x, na.rm = TRUE, ...) {
