@@ -8,10 +8,6 @@ library(plotly)
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
-#remove NA values
-inflation_data <- inflation_data |>
-  na.omit()
-
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
 inflation_data_filtered <- inflation_data |>
@@ -33,6 +29,13 @@ inflation_long <- inflation_data_filtered |>
     Date = ymd(paste(Year, Month, "01"))
   ) |>
   arrange(Date)
+
+inflation_long <- inflation_long |>
+  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
 
 overall_inflation_scatterplot <- ggplot(inflation_long, aes(x = Date, y = Overall_Inflation)) +
   geom_point() +  # Add points
