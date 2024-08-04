@@ -2,8 +2,8 @@
 library(tidyverse)
 library(dplyr)    # For data manipulation
 library(moments)  # For skewness and kurtosis calculations
-library(psych)    # For additional descriptive statistics
-
+library(psych) # For additional descriptive statistics
+library(lubridate) # For date manipulation
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 

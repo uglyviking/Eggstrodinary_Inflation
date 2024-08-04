@@ -9,8 +9,6 @@ library(tseries)
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
-
-
 # Determine the most recent year and filter if necessary
 max_year <- max(inflation_data$Year)
 inflation_data_filtered <- inflation_data |>
