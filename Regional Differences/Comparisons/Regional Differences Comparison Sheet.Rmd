@@ -89,11 +89,11 @@ print(dunn_test)
 ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_violin(trim = FALSE) +
   geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add a mini boxplot inside
-  labs(title = "Violin Plot of Egg Inflation Differences by Region (Last 4 Years)",
+  labs(title = "Violin Plot of Egg Inflation Differences by Region (Last 25 Years)",
        y = "Egg Inflation Difference")
 ```
 
-### 4 Years Egg Inflation
+## 4 Years Egg Inflation
 ```{r data-reload, include=FALSE}
 max_year <- max(data$Year)
 inflation_data_filtered <- data |>

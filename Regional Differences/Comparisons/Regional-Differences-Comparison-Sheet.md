@@ -77,7 +77,7 @@ You can also embed plots, for example:
 
 ![](Regional-Differences-Comparison-Sheet_files/figure-gfm/Violin-Plot-1.png)<!-- -->
 
-### 4 Years Egg Inflation
+## 4 Years Egg Inflation
 
 ### Descriptive Stats
 
