@@ -86,3 +86,5 @@ par(mfrow = c(1, 1))
 # Additional summary using psych package
 psych_summary <- describe(inflation_long[c("Overall_Inflation", "Egg_Inflation_Dif")])
 print(psych_summary)
+
+
