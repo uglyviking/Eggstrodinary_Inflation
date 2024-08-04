@@ -4,14 +4,15 @@ library(lubridate)
 library(car)  # for Levene's test
 library(agricolae)  # for Tukey's HSD
 library(trend)  # for Mann-Kendall test
-
+library(FSA) #for Dunn's test
+library(ggplot2)
 
 # Read the CSV file
 data <- read.csv("Data/Inflation_Differences.csv", stringsAsFactors = FALSE)
 
 max_year <- max(data$Year)
 inflation_data_filtered <- data |>
-  filter(Year > (max_year - 4))
+  filter(Year > (max_year - 25))
 
 # Reshape the data
 long_data <- inflation_data_filtered |>
@@ -19,7 +20,7 @@ long_data <- inflation_data_filtered |>
     cols = starts_with("Jan_Egg"):starts_with("Dec_Egg"),
     names_to = "Month",
     values_to = "Egg_Inflation_Dif"
-  ) %>%
+  ) |>
   mutate(
     Month = str_remove(Month, "_Egg_Inflation_Dif"),
     Date = ymd(paste(Year, Month, "01")),
@@ -29,13 +30,15 @@ long_data <- inflation_data_filtered |>
       NE == 1 ~ "Northeast",
       W == 1 ~ "West"
     )
-  ) %>%
-  select(Date, Region, Egg_Inflation_Dif) %>%
+  ) |>
+  select(Date, Region, Egg_Inflation_Dif) |>
   filter(!is.na(Egg_Inflation_Dif))
 
+shapiro.test(long_data$Egg_Inflation_Dif)
+
 # 1. Descriptive Statistics
-desc_stats <- long_data %>%
-  group_by(Region) %>%
+desc_stats <- long_data |>
+  group_by(Region) |>
   summarise(
     Mean = mean(Egg_Inflation_Dif, na.rm = TRUE),
     Median = median(Egg_Inflation_Dif, na.rm = TRUE),
@@ -56,19 +59,23 @@ kruskal.test(Egg_Inflation_Dif ~ Region, data = long_data)
 tukey_results <- TukeyHSD(anova_model)
 print(tukey_results)
 
-# 5. Pairwise t-tests
+# Dunn Test
+dunn_test <- dunnTest(Egg_Inflation_Dif ~ Region, data = long_data, method = "bonferroni")
+print(dunn_test)
+
+# 6. Pairwise t-tests
 pairwise.t.test(long_data$Egg_Inflation_Dif, long_data$Region, p.adjust.method = "bonferroni")
 
 # Mann-Kendall Trend Test for each region
-mk_results <- long_data %>%
-  group_by(Region) %>%
+mk_results <- long_data |>
+  group_by(Region) |>
   summarise(
     MK_test = list(mk.test(Egg_Inflation_Dif, continuity = TRUE))
-  ) %>%
+  ) |>
   mutate(
     MK_statistic = map_dbl(MK_test, ~ .$statistic),
     MK_p_value = map_dbl(MK_test, ~ .$p.value)
-  ) %>%
+  ) |>
   select(-MK_test)
 
 print(mk_results)
@@ -77,7 +84,7 @@ print(mk_results)
 leveneTest(Egg_Inflation_Dif ~ Region, data = long_data)
 
 # Visualization of distributions
-ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
+boxplot <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_boxplot() +
   labs(title = "Distribution of Egg Inflation Differences by Region (Last 4 Years)",
        y = "Egg Inflation Difference")
@@ -90,5 +97,5 @@ violinplot <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Re
 
 violinplot
 
-ggsave("egg_inflation_boxplot.png", width = 10, height = 6, dpi = 300)
-ggsave("egg_inflation_violinplot.png", plot = violinplot, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_boxplot_4years.png", plot = boxplot, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_violinplot_4years.png", plot = violinplot, width = 10, height = 6, dpi = 300)

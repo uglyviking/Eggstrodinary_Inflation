@@ -40,7 +40,7 @@ time_series_plot <- ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color
   theme(legend.position = "bottom")
 
 # Create the time series plot with broken lines for NA values
-  ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color = Region, group = Region)) +
+ time_series_gap <-  ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color = Region, group = Region)) +
   geom_line(na.rm = TRUE) +
   labs(title = "Egg Inflation Difference by Region",
        x = "Date",
@@ -52,7 +52,7 @@ time_series_plot <- ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color
 
 # Save the plot
 ggsave("egg_inflation_difference_by_region_4years.png", plot = time_series_plot, width = 12, height = 8, dpi = 300)
-ggsave("egg_inflation_difference_by_region_4years.png", plot = time_series_gap, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region__gap_4years.png", plot = time_series_gap, width = 12, height = 8, dpi = 300)
 
 
 time_series_plot_interactive <- ggplotly(time_series_plot)
