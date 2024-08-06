@@ -75,16 +75,15 @@ leveneTest(Egg_Inflation_Dif ~ Region, data = long_data)
 # Visualization of distributions
 ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_boxplot() +
-  labs(title = "Distribution of Egg Inflation Differences by Region",
-       y = "Egg Inflation Difference")
+  labs(title = "Distribution of Egg Inflation by Region (Last 25 Years)",
+       y = "Inflation")
 
-violinplot <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
+violinplot25 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_violin(trim = FALSE) +
   geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add a mini boxplot inside
-  labs(title = "Violin Plot of Egg Inflation Differences by Region",
-       y = "Egg Inflation Difference")
+  labs(title = "Violin Plot of Egg Inflation by Region (Last 25 Years)",
+       y = "Inflation")
 
-violinplot
 
-ggsave("egg_inflation_boxplot.png", width = 10, height = 6, dpi = 300)
-ggsave("egg_inflation_violinplot.png", plot = violinplot, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_boxplot_25.png", width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_violinplot_25.png", plot = violinplot25, width = 10, height = 6, dpi = 300)

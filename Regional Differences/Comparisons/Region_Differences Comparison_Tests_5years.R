@@ -12,7 +12,7 @@ data <- read.csv("Data/Inflation_Differences.csv", stringsAsFactors = FALSE)
 
 max_year <- max(data$Year)
 inflation_data_filtered <- data |>
-  filter(Year > (max_year - 25))
+  filter(Year > (max_year - 5))
 
 # Reshape the data
 long_data <- inflation_data_filtered |>
@@ -86,16 +86,16 @@ leveneTest(Egg_Inflation_Dif ~ Region, data = long_data)
 # Visualization of distributions
 boxplot <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_boxplot() +
-  labs(title = "Distribution of Egg Inflation Differences by Region (Last 4 Years)",
-       y = "Egg Inflation Difference")
+  labs(title = "Distribution of Egg Inflation by Region (Last 5 Years)",
+       y = "Inflation")
 
-violinplot <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
+violinplot5 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +
   geom_violin(trim = FALSE) +
   geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add a mini boxplot inside
-  labs(title = "Violin Plot of Egg Inflation Differences by Region (Last 4 Years)",
-       y = "Egg Inflation Difference")
+  labs(title = "Violin Plot of Egg Inflation by Region (Last 5 Years)",
+       y = "Inflation")
 
-violinplot
 
-ggsave("egg_inflation_boxplot_4years.png", plot = boxplot, width = 10, height = 6, dpi = 300)
-ggsave("egg_inflation_violinplot_4years.png", plot = violinplot, width = 10, height = 6, dpi = 300)
+
+ggsave("egg_inflation_boxplot_5years.png", plot = boxplot, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_violinplot_5years.png", plot = violinplot5, width = 10, height = 6, dpi = 300)

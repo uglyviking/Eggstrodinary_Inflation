@@ -60,46 +60,58 @@ inflation_long__egg_no_outliers <- inflation_long %>%
 
 # Create Q-Q plots
 qqplot_original <- ggplot(inflation_long, aes(sample = Overall_Inflation)) +
-  stat_qq() + stat_qq_line() + theme_minimal() +
-  labs(title = "Q-Q Plot of Original Overall Inflation")
+  stat_qq(color = "#EB4B33") + stat_qq_line() + 
+  labs(title = "Q-Q Plot of Overall Inflation",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
 
 qqplot_no_outliers <- ggplot(inflation_long_no_outliers, aes(sample = Overall_Inflation_no_outliers)) +
-  stat_qq() + stat_qq_line() + theme_minimal() +
-  labs(title = "Q-Q Plot of Overall Inflation (Outliers Removed)")
+  stat_qq(color = "#EB4B33") + stat_qq_line() + 
+  labs(title = "Q-Q Plot of Overall Inflation (Outliers Removed)",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
 
 qqplot_egg_original <- ggplot(inflation_long, aes(sample = Egg_Inflation_Dif)) +
-  stat_qq() + stat_qq_line() + theme_minimal() +
-  labs(title = "Q-Q Plot of Original Egg Inflation")
+  stat_qq(color = "#EBC531") + stat_qq_line() + 
+  labs(title = "Q-Q Plot of Egg Inflation",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
 
 qqplot_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(sample = Egg_Inflation_Dif_no_outliers)) +
-  stat_qq() + stat_qq_line() + theme_minimal() +
-  labs(title = "Q-Q Plot of Egg Inflation (Outliers Removed)")
+  stat_qq(color = "#EBC531") + stat_qq_line() + 
+  labs(title = "Q-Q Plot of Egg Inflation (Outliers Removed)",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
 
 
 # Create histograms
 histogram_original <- ggplot(inflation_long, aes(x = Overall_Inflation)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
-  geom_vline(aes(xintercept = mean(Overall_Inflation)), color = "red", linetype = "dashed", size = 1) +
-  theme_minimal() +
-  labs(title = "Histogram of Original Overall Inflation")
+  geom_histogram(binwidth = 1, fill = "#EB4B33", color = "black") +
+  geom_vline(aes(xintercept = mean(Overall_Inflation)), color = "black", linetype = "dashed", size = 1) +
+  labs(title = "Histogram of Overall Inflation",
+       x = "Inflation Amount",
+       y = "Frequency")
 
 histogram_no_outliers <- ggplot(inflation_long_no_outliers, aes(x = Overall_Inflation_no_outliers)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
-  geom_vline(aes(xintercept = mean(Overall_Inflation_no_outliers)), color = "red", linetype = "dashed", size = 1) +
-  theme_minimal() +
-  labs(title = "Histogram of Overall Inflation (Outliers Removed)")
+  geom_histogram(binwidth = 1, fill = "#EB4B33", color = "black") +
+  geom_vline(aes(xintercept = mean(Overall_Inflation_no_outliers)), color = "black", linetype = "dashed", size = 1) +
+  labs(title = "Histogram of Overall Inflation (Outliers Removed)",
+       x = "Inflation Amount",
+       y = "Frequency")
 
 histogram_egg_original <- ggplot(inflation_long, aes(x = Egg_Inflation_Dif)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
-  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif)), color = "red", linetype = "dashed", size = 1) +
-  theme_minimal() +
-  labs(title = "Histogram of Original Egg Inflation")
+  geom_histogram(binwidth = 1, fill = "#EBC531", color = "black") +
+  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif)), color = "black", linetype = "dashed", size = 1) +
+  labs(title = "Histogram of Egg Inflation",
+       x = "Inflation Amount",
+       y = "Frequency")
 
 histogram_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(x = Egg_Inflation_Dif_no_outliers)) +
-  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
-  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif_no_outliers)), color = "red", linetype = "dashed", size = 1) +
-  theme_minimal() +
-  labs(title = "Histogram of Egg Inflation (Outliers Removed)")
+  geom_histogram(binwidth = 1, fill = "#EBC531", color = "black") +
+  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif_no_outliers)), color = "black", linetype = "dashed", size = 1) +
+  labs(title = "Histogram of Egg Inflation (Outliers Removed)",
+       x = "Inflation Amount",
+       y = "Frequency")
 
 # Display plots
 print(qqplot_original)
@@ -122,3 +134,9 @@ print(shapiro_test_original)
 print(shapiro_test_no_outliers)
 print(shapiro_test_egg_original)
 print(shapiro_test_egg_no_outliers)
+
+ggsave("qqplot_inflation.png", plot = qqplot_original, width = 12, height = 8, dpi = 300)
+ggsave("qqplot_egg_inflation.png", plot = qqplot_egg_original, width = 12, height = 8, dpi = 300)
+ggsave("histogram_inflation.png", plot = histogram_original, width = 12, height = 8, dpi = 300)
+ggsave("histogram_egg_inflation.png", plot = histogram_egg_original, width = 12, height = 8, dpi = 300)
+
