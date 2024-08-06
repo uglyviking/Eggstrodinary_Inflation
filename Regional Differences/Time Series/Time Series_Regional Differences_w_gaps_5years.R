@@ -30,14 +30,15 @@ long_data <- inflation_data_filtered |>
 
 region_ts_5 <- ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color = Region, group = Region)) +
   geom_line(na.rm = TRUE) +
-  labs(title = "Egg Inflation Difference by Region (Last 5 ",
+  labs(title = "Egg Inflation by Region (Last 5 Years)",
        x = "Date",
        y = "Inflation",
        color = "Region") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom")+
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 
 # Save the plot
-ggsave("egg_inflation_difference_by_region_5.png", plot = region_ts_5, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region_gaps_5.png", plot = region_ts_5, width = 12, height = 8, dpi = 300)
 
 
 

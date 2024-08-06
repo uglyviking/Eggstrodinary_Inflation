@@ -7,12 +7,12 @@ library(plotly)
 data <- read.csv("Data/Inflation_Differences.csv", stringsAsFactors = FALSE)
 
 
-long_data <- data %>%
+long_data <- data |>
   pivot_longer(
     cols = starts_with("Jan_Egg"):starts_with("Dec_Egg"),
     names_to = "Month",
     values_to = "Egg_Inflation_Dif"
-  ) %>%
+  ) |>
   mutate(
     Month = str_remove(Month, "_Egg_Inflation_Dif"),
     Date = ymd(paste(Year, Month, "01")),
@@ -22,20 +22,20 @@ long_data <- data %>%
       NE == 1 ~ "Northeast",
       W == 1 ~ "West"
     )
-  ) %>%
+  ) |>
   select(Date, Region, Egg_Inflation_Dif)
 
-# Create the time series plot with broken lines for NA values
-ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color = Region, group = Region)) +
+region_ts_10 <-  ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color = Region, group = Region)) +
   geom_line(na.rm = TRUE) +
-  labs(title = "Egg Inflation Difference by Region",
+  labs(title = "Egg Inflation by Region (Last 10 Years)",
        x = "Date",
-       y = "Egg Inflation Difference",
+       y = "Inflation",
        color = "Region") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 
 # Save the plot
-ggsave("egg_inflation_difference_by_region_updated.png", width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region_gaps_10years.png", plot = region_ts_10, width = 12, height = 8, dpi = 300)
 
 
 
