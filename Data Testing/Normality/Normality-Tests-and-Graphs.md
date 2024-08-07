@@ -1,6 +1,5 @@
 Normality test
 ================
-2024-08-01
 
 ## Overall Inflation Plots
 
@@ -18,7 +17,7 @@ Normality test
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  inflation_long$Overall_Inflation
-    ## W = 0.96006, p-value = 3.193e-07
+    ## W = 0.92195, p-value = 2.869e-11
 
 ### Original No Outliers
 
@@ -26,20 +25,20 @@ Normality test
     ##  Shapiro-Wilk normality test
     ## 
     ## data:  inflation_long_no_outliers$Overall_Inflation_no_outliers
-    ## W = 0.98663, p-value = 0.011
+    ## W = 0.98797, p-value = 0.02248
 
 ### Original Egg Inflation
 
     ## 
     ##  Shapiro-Wilk normality test
     ## 
-    ## data:  inflation_long$Egg_Inflation_Dif
-    ## W = 0.96048, p-value = 3.624e-07
+    ## data:  inflation_long$Egg_Inflation
+    ## W = 0.96006, p-value = 3.193e-07
 
 ### Egg Inflation No Outliers
 
     ## 
     ##  Shapiro-Wilk normality test
     ## 
-    ## data:  inflation_long__egg_no_outliers$Egg_Inflation_Dif_no_outliers
-    ## W = 0.99044, p-value = 0.0691
+    ## data:  inflation_long__egg_no_outliers$Egg_Inflation_no_outliers
+    ## W = 0.98663, p-value = 0.011
