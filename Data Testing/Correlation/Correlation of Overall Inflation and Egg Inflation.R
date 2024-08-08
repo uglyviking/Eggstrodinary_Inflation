@@ -40,7 +40,7 @@ inflation_long <- inflation_long |>
 
 
 correlation_pearson <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "pearson")
-correlation_spearman <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation_Dif, method = "spearman")
+correlation_spearman <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "spearman")
 
 
 print(correlation_pearson)

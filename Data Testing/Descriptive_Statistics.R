@@ -2,9 +2,10 @@
 library(tidyverse)
 library(dplyr)    # For data manipulation
 library(moments)  # For skewness and kurtosis calculations
-library(psych) # For additional descriptive statistics
+library(psych)    # For additional descriptive statistics
 library(lubridate) # For date manipulation
-#import data
+
+# Import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
 # Determine the most recent year and filter if necessary
@@ -36,6 +37,7 @@ inflation_long <- inflation_data_filtered |>
 
 # Function to calculate all descriptive statistics
 get_descriptive_stats <- function(x) {
+  x_clean <- na.omit(x)  # Remove NA values for skewness and kurtosis calculations
   c(
     n = length(x),
     missing = sum(is.na(x)),
@@ -48,8 +50,8 @@ get_descriptive_stats <- function(x) {
     Q1 = quantile(x, 0.25, na.rm = TRUE),
     Q3 = quantile(x, 0.75, na.rm = TRUE),
     IQR = IQR(x, na.rm = TRUE),
-    skewness = skewness(x, na.rm = TRUE),
-    kurtosis = kurtosis(x, na.rm = TRUE)
+    skewness = skewness(x_clean),  # Use clean data for skewness
+    kurtosis = kurtosis(x_clean)   # Use clean data for kurtosis
   )
 }
 
