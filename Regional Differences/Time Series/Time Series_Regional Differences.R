@@ -7,12 +7,12 @@ library(plotly)
 data <- read.csv("Data/Inflation_Differences.csv", stringsAsFactors = FALSE)
 
 # Reshape the data
-long_data <- data %>%
+long_data <- data |>
   pivot_longer(
     cols = starts_with("Jan_Egg"):starts_with("Dec_Egg"),
     names_to = "Month",
     values_to = "Egg_Inflation_Dif"
-  ) %>%
+  ) |>
   mutate(
     Month = str_remove(Month, "_Egg_Inflation_Dif"),
     Date = ymd(paste(Year, Month, "01")),
@@ -22,8 +22,8 @@ long_data <- data %>%
       NE == 1 ~ "Northeast",
       W == 1 ~ "West"
     )
-  ) %>%
-  select(Date, Region, Egg_Inflation_Dif) %>%
+  ) |>
+  select(Date, Region, Egg_Inflation_Dif) |>
   filter(!is.na(Egg_Inflation_Dif))
 
 # Create the time series plot

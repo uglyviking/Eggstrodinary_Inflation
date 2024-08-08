@@ -17,22 +17,24 @@ inflation_data_filtered <- inflation_data |>
 # Reshape the filtered data
 inflation_long <- inflation_data_filtered |>
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
-    names_to = c("Month", ".value"),
-    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
-  ) |>
-  rename(
-    Overall_Inflation = Percentage_Change,
-    Egg_Inflation_Dif = Egg_Inflation_Dif
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
   ) |>
   mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
   ) |>
-  arrange(Date)
-
-inflation_long <- inflation_long |>
-  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
 
 #remove NA values
 inflation_long <- inflation_long |>
@@ -45,20 +47,21 @@ overall_inflation_ts <- ts(inflation_long$Overall_Inflation,
                            end = c(max(inflation_long$Year), 12), 
                            frequency = 12)
 
-egg_inflation_diff_ts <- ts(inflation_long$Egg_Inflation_Dif, 
+egg_inflation_ts <- ts(inflation_long$Egg_Inflation, 
                             start = c(min(inflation_long$Year), 1), 
                             end = c(max(inflation_long$Year), 12), 
                             frequency = 12)
 
 # Augmented Dickey-Fuller test
 adf.test(inflation_long$Overall_Inflation)
+adf.test(inflation_long$Egg_Inflation)
 #data appears stationary
 
 # Plot both time series using ggplot2
 time_series_plot_25 <- ggplot(inflation_long, aes(x = Date)) +
   geom_line(aes(y = Overall_Inflation, color = "Overall Inflation")) +
-  geom_line(aes(y = Egg_Inflation_Dif, color = "Egg Inflation")) +
-  labs(title = "Comparison of Overall Inflation and Egg Inflation (Last 24 Years)", 
+  geom_line(aes(y = Egg_Inflation, color = "Egg Inflation")) +
+  labs(title = "Comparison of Overall Inflation and Egg Inflation (Last 25 Years)", 
        y = "Percentage Change", 
        color = "Measure") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
@@ -79,22 +82,24 @@ inflation_data_filtered <- inflation_data |>
 # Reshape the filtered data
 inflation_long <- inflation_data_filtered |>
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
-    names_to = c("Month", ".value"),
-    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
-  ) |>
-  rename(
-    Overall_Inflation = Percentage_Change,
-    Egg_Inflation_Dif = Egg_Inflation_Dif
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
   ) |>
   mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
   ) |>
-  arrange(Date)
-
-inflation_long <- inflation_long |>
-  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
 
 #remove NA values
 inflation_long <- inflation_long |>
@@ -107,7 +112,7 @@ overall_inflation_ts <- ts(inflation_long$Overall_Inflation,
                            end = c(max(inflation_long$Year), 12), 
                            frequency = 12)
 
-egg_inflation_diff_ts <- ts(inflation_long$Egg_Inflation_Dif, 
+egg_inflation_ts <- ts(inflation_long$Egg_Inflation, 
                             start = c(min(inflation_long$Year), 1), 
                             end = c(max(inflation_long$Year), 12), 
                             frequency = 12)
@@ -117,7 +122,7 @@ inflation_long$Date <- as.Date(inflation_long$Date)
 
 time_series_plot_5 <- ggplot(inflation_long, aes(x = Date)) +
   geom_line(aes(y = Overall_Inflation, color = "Overall Inflation")) +
-  geom_line(aes(y = Egg_Inflation_Dif, color = "Egg Inflation")) +
+  geom_line(aes(y = Egg_Inflation, color = "Egg Inflation")) +
   labs(title = "Comparison of Overall Inflation and Egg Inflation (Last 5 Years)", 
        y = "Percentage Change", 
        color = "Measure") +
