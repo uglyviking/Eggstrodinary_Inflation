@@ -15,34 +15,114 @@ inflation_data_filtered <- inflation_data |>
 # Reshape the filtered data
 inflation_long <- inflation_data_filtered |>
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
-    names_to = c("Month", ".value"),
-    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
-  ) |>
-  rename(
-    Overall_Inflation = Percentage_Change,
-    Egg_Inflation_Dif = Egg_Inflation_Dif
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
   ) |>
   mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
   ) |>
-  arrange(Date)
-
-inflation_long <- inflation_long |>
-  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
 
 #remove NA values
 inflation_long <- inflation_long |>
   na.omit()
 
 
-correlation_pearson <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation_Dif, method = "pearson")
+correlation_pearson <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "pearson")
 correlation_spearman <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation_Dif, method = "spearman")
 
 
 print(correlation_pearson)
 print(correlation_spearman)
+
+
+#Repeat for 10 year interval
+inflation_data_filtered <- inflation_data |>
+  filter(Year > (max_year - 10))
+
+# Reshape the filtered data
+inflation_long <- inflation_data_filtered |>
+  pivot_longer(
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
+  ) |>
+  mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
+    Month = match(Month, month.abb),
+    Date = ymd(paste(Year, Month, "01"))
+  ) |>
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
+
+
+correlation_pearson <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "pearson")
+correlation_spearman <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "spearman")
+
+
+print(correlation_pearson)
+print(correlation_spearman)
+
+#Repeat for 5 year interval 
+inflation_data_filtered <- inflation_data |>
+  filter(Year > (max_year - 5))
+
+# Reshape the filtered data
+inflation_long <- inflation_data_filtered |>
+  pivot_longer(
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
+  ) |>
+  mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
+    Month = match(Month, month.abb),
+    Date = ymd(paste(Year, Month, "01"))
+  ) |>
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
+
+#remove NA values
+inflation_long <- inflation_long |>
+  na.omit()
+
+
+correlation_pearson <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "pearson")
+correlation_spearman <- cor.test(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, method = "spearman")
+
+
+print(correlation_pearson)
+print(correlation_spearman)
+
 
 
 

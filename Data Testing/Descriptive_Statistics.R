@@ -15,22 +15,24 @@ inflation_data_filtered <- inflation_data |>
 # Reshape the filtered data
 inflation_long <- inflation_data_filtered |>
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
-    names_to = c("Month", ".value"),
-    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
-  ) |>
-  rename(
-    Overall_Inflation = Percentage_Change,
-    Egg_Inflation_Dif = Egg_Inflation_Dif
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
   ) |>
   mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
   ) |>
-  arrange(Date)
-
-inflation_long <- inflation_long |>
-  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
 
 # Function to calculate all descriptive statistics
 get_descriptive_stats <- function(x) {
@@ -53,39 +55,38 @@ get_descriptive_stats <- function(x) {
 
 # Calculate descriptive statistics
 overall_inflation_stats <- get_descriptive_stats(inflation_long$Overall_Inflation)
-egg_inflation_diff_stats <- get_descriptive_stats(inflation_long$Egg_Inflation_Dif)
+egg_inflation_stats <- get_descriptive_stats(inflation_long$Egg_Inflation)
 
 # Combine results into a data frame
 descriptive_stats <- data.frame(
   Statistic = names(overall_inflation_stats),
   Overall_Inflation = overall_inflation_stats,
-  Egg_Inflation_Difference = egg_inflation_diff_stats
+  Egg_Inflation = egg_inflation_stats
 )
 
 # Print the results
 print(descriptive_stats)
 
 # Calculate correlations
-correlation <- cor(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation_Dif, use = "complete.obs")
-print(paste("Correlation between Overall Inflation and Egg Inflation Difference:", round(correlation, 4)))
+correlation <- cor(inflation_long$Overall_Inflation, inflation_long$Egg_Inflation, use = "complete.obs")
+print(paste("Correlation between Overall Inflation and Egg Inflation:", round(correlation, 4)))
 
 # Visual summaries
 par(mfrow = c(2, 2))
 
 # Histograms
 hist(inflation_long$Overall_Inflation, main = "Histogram of Overall Inflation", xlab = "Overall Inflation")
-hist(inflation_long$Egg_Inflation_Dif, main = "Histogram of Egg Inflation Difference", xlab = "Egg Inflation Difference")
+hist(inflation_long$Egg_Inflation, main = "Histogram of Egg Inflation", xlab = "Egg Inflation Difference")
 
 # Box plots
 boxplot(inflation_long$Overall_Inflation, main = "Boxplot of Overall Inflation", ylab = "Overall Inflation")
-boxplot(inflation_long$Egg_Inflation_Dif, main = "Boxplot of Egg Inflation Difference", ylab = "Egg Inflation Difference")
+boxplot(inflation_long$Egg_Inflation, main = "Boxplot of Egg Inflation", ylab = "Egg Inflation")
 
 # Reset plot layout
 par(mfrow = c(1, 1))
 
 # Additional summary using psych package
-psych_summary <- describe(inflation_long[c("Overall_Inflation", "Egg_Inflation_Dif")])
+psych_summary <- describe(inflation_long[c("Overall_Inflation", "Egg_Inflation")])
 print(psych_summary)
 
-?par
 

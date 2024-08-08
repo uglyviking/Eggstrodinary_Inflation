@@ -14,25 +14,27 @@ max_year <- max(inflation_data$Year)
 inflation_data_filtered <- inflation_data |>
   filter(Year > (max_year - 25))
 
-# Reshape the filtered data
+
 inflation_long <- inflation_data_filtered |>
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), ends_with("Egg_Inflation_Dif")),
-    names_to = c("Month", ".value"),
-    names_pattern = "(.+)_(Percentage_Change|Egg_Inflation_Dif)"
-  ) |>
-  rename(
-    Overall_Inflation = Percentage_Change,
-    Egg_Inflation_Dif = Egg_Inflation_Dif
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
   ) |>
   mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
   ) |>
-  arrange(Date)
-
-inflation_long <- inflation_long |>
-  select(Year, Overall_Inflation, Egg_Inflation_Dif, Date)
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
 
 #remove NA values
 inflation_long <- inflation_long |>
@@ -48,15 +50,16 @@ remove_outliers <- function(x, na.rm = TRUE, ...) {
   y
 }
 
+
 # Remove outliers from Overall_Inflation
-inflation_long_no_outliers <- inflation_long %>%
-  mutate(Overall_Inflation_no_outliers = remove_outliers(Overall_Inflation)) %>%
+inflation_long_no_outliers <- inflation_long |>
+  mutate(Overall_Inflation_no_outliers = remove_outliers(Overall_Inflation)) |>
   filter(!is.na(Overall_Inflation_no_outliers))
 
 # Remove outliers from Egg Inflation
-inflation_long__egg_no_outliers <- inflation_long %>%
-  mutate(Egg_Inflation_Dif_no_outliers = remove_outliers(Egg_Inflation_Dif)) %>%
-  filter(!is.na(Egg_Inflation_Dif_no_outliers))
+inflation_long__egg_no_outliers <- inflation_long |>
+  mutate(Egg_Inflation_no_outliers = remove_outliers(Egg_Inflation)) |>
+  filter(!is.na(Egg_Inflation_no_outliers))
 
 # Create Q-Q plots
 qqplot_original <- ggplot(inflation_long, aes(sample = Overall_Inflation)) +
@@ -71,13 +74,13 @@ qqplot_no_outliers <- ggplot(inflation_long_no_outliers, aes(sample = Overall_In
        x = "Theoretical Quantiles",
        y = "Sample Quantiles")
 
-qqplot_egg_original <- ggplot(inflation_long, aes(sample = Egg_Inflation_Dif)) +
+qqplot_egg_original <- ggplot(inflation_long, aes(sample = Egg_Inflation)) +
   stat_qq(color = "#EBC531") + stat_qq_line() + 
   labs(title = "Q-Q Plot of Egg Inflation",
        x = "Theoretical Quantiles",
        y = "Sample Quantiles")
 
-qqplot_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(sample = Egg_Inflation_Dif_no_outliers)) +
+qqplot_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(sample = Egg_Inflation_no_outliers)) +
   stat_qq(color = "#EBC531") + stat_qq_line() + 
   labs(title = "Q-Q Plot of Egg Inflation (Outliers Removed)",
        x = "Theoretical Quantiles",
@@ -99,16 +102,16 @@ histogram_no_outliers <- ggplot(inflation_long_no_outliers, aes(x = Overall_Infl
        x = "Inflation Amount",
        y = "Frequency")
 
-histogram_egg_original <- ggplot(inflation_long, aes(x = Egg_Inflation_Dif)) +
+histogram_egg_original <- ggplot(inflation_long, aes(x = Egg_Inflation)) +
   geom_histogram(binwidth = 1, fill = "#EBC531", color = "black") +
-  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif)), color = "black", linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = mean(Egg_Inflation)), color = "black", linetype = "dashed", size = 1) +
   labs(title = "Histogram of Egg Inflation",
        x = "Inflation Amount",
        y = "Frequency")
 
-histogram_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(x = Egg_Inflation_Dif_no_outliers)) +
+histogram_egg_no_outliers <- ggplot(inflation_long__egg_no_outliers, aes(x = Egg_Inflation_no_outliers)) +
   geom_histogram(binwidth = 1, fill = "#EBC531", color = "black") +
-  geom_vline(aes(xintercept = mean(Egg_Inflation_Dif_no_outliers)), color = "black", linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = mean(Egg_Inflation_no_outliers)), color = "black", linetype = "dashed", size = 1) +
   labs(title = "Histogram of Egg Inflation (Outliers Removed)",
        x = "Inflation Amount",
        y = "Frequency")
@@ -127,8 +130,8 @@ print(histogram_egg_no_outliers)
 # Shapiro-Wilk test for normality
 shapiro_test_original <- shapiro.test(inflation_long$Overall_Inflation)
 shapiro_test_no_outliers <- shapiro.test(inflation_long_no_outliers$Overall_Inflation_no_outliers)
-shapiro_test_egg_original <- shapiro.test(inflation_long$Egg_Inflation_Dif)
-shapiro_test_egg_no_outliers <- shapiro.test(inflation_long__egg_no_outliers$Egg_Inflation_Dif_no_outliers)
+shapiro_test_egg_original <- shapiro.test(inflation_long$Egg_Inflation)
+shapiro_test_egg_no_outliers <- shapiro.test(inflation_long__egg_no_outliers$Egg_Inflation_no_outliers)
 
 print(shapiro_test_original)
 print(shapiro_test_no_outliers)
