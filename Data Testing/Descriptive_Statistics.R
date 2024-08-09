@@ -106,7 +106,7 @@ boxplot_inflation_comparison <- ggplot(inflation_comparison, aes(x = Inflation_T
   geom_boxplot() +
   labs(title = "Distribution of Overall Inflation and Egg Inflation",
        x = "Inflation Type",
-       y = "Inflation Rate (%)",
+       y = "Inflation Rate",
        fill = "Inflation Type") +
   theme(legend.position = "none") +  # Remove legend as it's redundant with x-axis labels
   scale_fill_manual(values = custom_colors)  # Use custom colors
