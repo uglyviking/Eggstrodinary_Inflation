@@ -30,7 +30,7 @@ combined_time_series <- ggarrange(
 )
 
 combined_violin_plots <- ggarrange(
-  violinplot25, violinplot5,
+  violinplot_10, violinplot_5,
   ncol = 1, nrow = 2,
   labels = c("A", "B"),
   common.legend = TRUE, legend = "bottom"
