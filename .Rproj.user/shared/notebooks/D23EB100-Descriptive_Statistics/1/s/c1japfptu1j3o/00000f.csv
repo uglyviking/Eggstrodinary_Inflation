@@ -1,0 +1,5 @@
+"0","gt(descriptive_stats) |>"
+"0","  fmt_number(columns = c(""Overall_Inflation"", ""Egg_Inflation""), decimals = 3) |>"
+"0","  tab_header(title = ""Descriptive Statistics for Inflation Data"") |>"
+"0","  opt_row_striping() |>"
+"0","  opt_table_font(font = ""Arial"")"

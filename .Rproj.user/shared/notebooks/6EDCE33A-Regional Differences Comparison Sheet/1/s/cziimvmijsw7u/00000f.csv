@@ -1,0 +1,5 @@
+"0","ggplot(long_data, aes(x = Region, y = Egg_Inflation_Dif, fill = Region)) +"
+"0","  geom_violin(trim = FALSE) +"
+"0","  geom_boxplot(width = 0.1, fill = ""white"", color = ""black"") +  # Add a mini boxplot inside"
+"0","  labs(title = ""Violin Plot of Egg Inflation Differences by Region (Last 4 Years)"","
+"0","       y = ""Egg Inflation Difference"")"

@@ -1,0 +1,109 @@
+---
+title: "Descriptive Statistics"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load required libraries
+library(tidyverse)
+library(dplyr)    # For data manipulation
+library(moments)  # For skewness and kurtosis calculations
+library(psych)    # For additional descriptive statistics
+library(lubridate) # For date manipulation
+library(gt)
+
+# Import data
+inflation_data <- read.csv("C:/Users/jacob/Documents/Eggstrodinary_Inflation/Data/City_Inflation_Differences.csv") 
+
+# Determine the most recent year and filter if necessary
+max_year <- max(inflation_data$Year)
+inflation_data_filtered <- inflation_data |>
+  filter(Year > (max_year - 25))
+
+# Reshape the filtered data
+inflation_long <- inflation_data_filtered |>
+  pivot_longer(
+    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    names_to = "Month",
+    values_to = "Inflation"
+  ) |>
+  mutate(
+    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = ifelse(Type == "Egg_Inflation", 
+                   sub("_Percentage_Change$", "", Month),
+                   Month),
+    Month = match(Month, month.abb),
+    Date = ymd(paste(Year, Month, "01"))
+  ) |>
+  pivot_wider(
+    names_from = Type,
+    values_from = Inflation
+  ) |>
+  arrange(Date) |>
+  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
+
+# Function to calculate all descriptive statistics
+get_descriptive_stats <- function(x) {
+  x_clean <- na.omit(x)  # Remove NA values for skewness and kurtosis calculations
+  c(
+    n = length(x),
+    missing = sum(is.na(x)),
+    mean = mean(x, na.rm = TRUE),
+    median = median(x, na.rm = TRUE),
+    sd = sd(x, na.rm = TRUE),
+    min = min(x, na.rm = TRUE),
+    max = max(x, na.rm = TRUE),
+    range = diff(range(x, na.rm = TRUE)),
+    Q1 = quantile(x, 0.25, na.rm = TRUE),
+    Q3 = quantile(x, 0.75, na.rm = TRUE),
+    IQR = IQR(x, na.rm = TRUE),
+    skewness = skewness(x_clean),  # Use clean data for skewness
+    kurtosis = kurtosis(x_clean)   # Use clean data for kurtosis
+  )
+}
+
+# Calculate descriptive statistics
+overall_inflation_stats <- get_descriptive_stats(inflation_long$Overall_Inflation)
+egg_inflation_stats <- get_descriptive_stats(inflation_long$Egg_Inflation)
+
+# Combine results into a data frame
+descriptive_stats <- data.frame(
+  Statistic = names(overall_inflation_stats),
+  Overall_Inflation = overall_inflation_stats,
+  Egg_Inflation = egg_inflation_stats
+)
+
+```
+
+```{r descriptive_stats_table, echo=FALSE}
+gt(descriptive_stats) |>
+  fmt_number(columns = c("Overall_Inflation", "Egg_Inflation"), decimals = 3) |>
+  tab_header(title = "Descriptive Statistics for Inflation Data") |>
+  opt_row_striping() |>
+  opt_table_font(font = "Arial")
+```
+
+```{r plots, echo=FALSE, warning=FALSE}
+inflation_comparison <- inflation_long |>
+  select(Date, Overall_Inflation, Egg_Inflation) |>
+  pivot_longer(cols = c(Overall_Inflation, Egg_Inflation),
+               names_to = "Inflation_Type",
+               values_to = "Inflation_Rate")
+
+# Create a named vector for custom colors
+custom_colors <- c("Overall_Inflation" = "#EB4B33", "Egg_Inflation" = "#EBC531")
+
+# Create the boxplot with custom colors
+ggplot(inflation_comparison, aes(x = Inflation_Type, y = Inflation_Rate, fill = Inflation_Type)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Overall Inflation and Egg Inflation",
+       x = "Inflation Type",
+       y = "Inflation Rate (%)",
+       fill = "Inflation Type") +
+  theme(legend.position = "none") +  # Remove legend as it's redundant with x-axis labels
+  scale_fill_manual(values = custom_colors) 
+```
+
+

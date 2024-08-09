@@ -104,7 +104,7 @@ custom_colors <- c("Overall_Inflation" = "#EB4B33", "Egg_Inflation" = "#EBC531")
 # Create the boxplot with custom colors
 boxplot_inflation_comparison <- ggplot(inflation_comparison, aes(x = Inflation_Type, y = Inflation_Rate, fill = Inflation_Type)) +
   geom_boxplot() +
-  labs(title = "Distribution of Overall Inflation and Egg Inflation",
+  labs(title = "Distribution of Overall Inflation and Egg Inflation (Last 25 Years)",
        x = "Inflation Type",
        y = "Inflation Rate",
        fill = "Inflation Type") +
