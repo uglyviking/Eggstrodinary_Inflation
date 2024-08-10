@@ -41,7 +41,8 @@ region_ts_10 <-  ggplot(long_data, aes(x = Date, y = Egg_Inflation, color = Regi
   labs(title = "Egg Inflation by Region (Last 10 Years)",
        x = "Date",
        y = "Inflation",
-       color = "Region") +
+       color = "Region",
+       caption = "Some regions have gaps in data") +
   theme(legend.position = "bottom") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 
@@ -87,7 +88,8 @@ time_series_region_5 <- ggplot(long_data, aes(x = Date, y = Egg_Inflation, color
   labs(title = "Egg Inflation by Region (Last 5 Years)",
        x = "Date",
        y = "Inflation",
-       color = "Region") +
+       color = "Region",
+       caption = "Some regions have gaps in data") +
   theme(legend.position = "bottom")+
   scale_x_date(
     date_breaks = "3 months",

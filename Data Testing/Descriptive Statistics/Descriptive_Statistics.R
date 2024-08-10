@@ -4,7 +4,8 @@ library(dplyr)    # For data manipulation
 library(moments)  # For skewness and kurtosis calculations
 library(psych)    # For additional descriptive statistics
 library(lubridate) # For date manipulation
-library(gt)       # For creating tables)
+library(gt) 
+library(webshot2) # For creating tables)
 
 # Import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
@@ -127,7 +128,7 @@ inflation_table <- gt(descriptive_stats) %>%
   fmt_number(columns = c("Overall Inflation", "Egg Inflation"), decimals = 2) %>%
   tab_header(
     title = "Descriptive Statistics for Inflation Data",
-    subtitle = "Comparison of Overall Inflation and Egg Inflation"  # Add your desired subtitle here
+    subtitle = "US City Average for 2000-2024"  # Add your desired subtitle here
   ) %>%
   opt_row_striping() %>%
   opt_table_font(font = "Arial")
@@ -136,7 +137,7 @@ inflation_table <- gt(descriptive_stats) %>%
 print(inflation_table)
 
 # Save the table as an HTML file
-gtsave(inflation_table, filename = "inflation_table.html")
+gtsave(inflation_table, filename = "inflation_table_5.html")
 
 # Use webshot2 to convert the HTML to a PNG image with 300 DPI
-webshot("inflation_table.html", file = "inflation_table.png", zoom = 2, vwidth = 1000, vheight = 800)
+webshot("inflation_table_5.html", file = "inflation_table_5.png", zoom = 2, vwidth = 1000, vheight = 800)

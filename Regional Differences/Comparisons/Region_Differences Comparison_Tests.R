@@ -78,7 +78,7 @@ boxplot_regions_10 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill 
 violinplot_10 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill = Region)) +
   geom_violin(trim = FALSE) +
   geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add a mini boxplot inside
-  labs(title = "Violin Plot of Egg Inflation by Region (Last 10 Years)",
+  labs(title = "Distribution of Egg Inflation by Region (Last 10 Years)",
        y = "Inflation")
 
 
@@ -178,7 +178,7 @@ boxplot_regions_5 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill =
 violinplot_5 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill = Region)) +
   geom_violin(trim = FALSE) +
   geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add a mini boxplot inside
-  labs(title = "Violin Plot of Egg Inflation by Region (Last 5 Years)",
+  labs(title = "Distribution of Egg Inflation by Region (Last 5 Years)",
        y = "Inflation")
 
 
