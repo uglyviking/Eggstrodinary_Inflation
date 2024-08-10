@@ -47,8 +47,8 @@ time_series_plot <- ggplot(long_data, aes(x = Date, y = Egg_Inflation_Dif, color
 
 
 # Save the plot
-ggsave("egg_inflation_difference_by_region.png", plot = time_series_plot, width = 12, height = 8, dpi = 300)
-ggsave("egg_inflation_difference_by_region.png", plot = time_series_gap, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region.png", plot = time_series_plot, width = 8, height = 5, dpi = 300)
+ggsave("egg_inflation_difference_by_region.png", plot = time_series_gap, width = 8, height = 5, dpi = 300)
 
 
 time_series_plot_interactive <- ggplotly(time_series_plot)

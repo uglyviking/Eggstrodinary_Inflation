@@ -6,6 +6,8 @@ library(agricolae)
 library(trend)
 library(FSA)
 library(ggplot2)
+library(gt)
+library(webshot2)
 
 
 # Read the CSV file
@@ -53,6 +55,8 @@ desc_stats <- long_data |>
   )
 print(desc_stats)
 
+
+
 #Test Normality
 shapiro.test(long_data$Egg_Inflation)
 
@@ -78,12 +82,36 @@ violinplot_10 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill = Reg
        y = "Inflation")
 
 
-ggsave("egg_inflation_boxplot_10.png", plot = boxplot_regions_10, width = 10, height = 6, dpi = 300)
-ggsave("egg_inflation_violinplot_10.png", plot = violinplot_10, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_boxplot_10.png", plot = boxplot_regions_10, width = 8, height = 5, dpi = 300)
+ggsave("egg_inflation_violinplot_10.png", plot = violinplot_10, width = 8, height = 5, dpi = 300)
 
+# Create the gt table
+regional_egg_inflation_table <- desc_stats %>%
+  gt() %>%
+  fmt_number(columns = c(Mean, Median, SD, Min, Max), decimals = 2) %>%
+  tab_header(
+    title = "Descriptive Statistics for Regional Egg Inflation",
+    subtitle = "Regional Data for 2014-2024"
+  ) %>%
+  opt_row_striping() %>%
+  opt_table_font(font = "Arial") %>%
+  cols_label(
+    Region = "Region",
+    Mean = "Mean",
+    Median = "Median",
+    SD = "Std. Deviation",
+    Min = "Minimum",
+    Max = "Maximum"
+  )
+
+# Display the table
+print(regional_egg_inflation_table)
+# Save the table as an HTML file
+gtsave(regional_egg_inflation_table, filename = "regional_egg_inflation_table.html")
+# Use webshot2 to convert the HTML to a PNG image with 300 DPI
+webshot("regional_egg_inflation_table.html", file = "regional_egg_inflation_table.png", zoom = 2, vwidth = 1000, vheight = 800)
 
 # Repeat for 5 years
-
 max_year <- max(region_data$Year)
 inflation_data_filtered <- region_data |>
   filter(Year > (max_year - 5))
@@ -154,5 +182,5 @@ violinplot_5 <- ggplot(long_data, aes(x = Region, y = Egg_Inflation, fill = Regi
        y = "Inflation")
 
 
-ggsave("egg_inflation_boxplot_5.png", plot = boxplot_regions_5, width = 10, height = 6, dpi = 300)
-ggsave("egg_inflation_violinplot_5.png", plot = violinplot_5, width = 10, height = 6, dpi = 300)
+ggsave("egg_inflation_boxplot_5.png", plot = boxplot_regions_5, width = 8, height = 5, dpi = 300)
+ggsave("egg_inflation_violinplot_5.png", plot = violinplot_5, width = 8, height = 5, dpi = 300)

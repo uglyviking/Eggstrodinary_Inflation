@@ -46,7 +46,7 @@ region_ts_10 <-  ggplot(long_data, aes(x = Date, y = Egg_Inflation, color = Regi
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 
 # Save the plot
-ggsave("egg_inflation_difference_by_region_gaps_10years.png", plot = region_ts_10, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region_gaps_10years.png", plot = region_ts_10, width = 8, height = 5, dpi = 300)
 
 # Repeat for 5 years
 max_year <- max(region_data$Year)
@@ -95,7 +95,7 @@ time_series_region_5 <- ggplot(long_data, aes(x = Date, y = Egg_Inflation, color
     expand = c(0.02, 0))
 
 # Save the plot
-ggsave("egg_inflation_difference_by_region_5years.png", plot = time_series_region_5, width = 12, height = 8, dpi = 300)
+ggsave("egg_inflation_difference_by_region_5years.png", plot = time_series_region_5, width = 8, height = 5, dpi = 300)
 
 
 
