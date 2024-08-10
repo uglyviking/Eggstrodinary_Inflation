@@ -4,7 +4,7 @@ library(dplyr)    # For data manipulation
 library(moments)  # For skewness and kurtosis calculations
 library(psych)    # For additional descriptive statistics
 library(lubridate) # For date manipulation
-library(webshot2)
+library(flextable)
 
 # Import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
@@ -119,15 +119,25 @@ print(boxplot_inflation_comparison)
 ggsave("inflation_comparison_boxplot.png", boxplot_inflation_comparison, width = 10, height = 6, dpi = 300)
 
 
-# Create your gt table
-my_gt_table <- gt(descriptive_stats) %>%
-  fmt_number(columns = c("Overall_Inflation", "Egg_Inflation"), decimals = 3) %>%
-  tab_header(title = "Descriptive Statistics for Inflation Data") %>%
-  opt_row_striping() %>%
-  opt_table_font(font = "Arial")
+names(descriptive_stats)[names(descriptive_stats) == "Overall_Inflation"] <- "Overall Inflation"
+names(descriptive_stats)[names(descriptive_stats) == "Egg_Inflation"] <- "Egg Inflation"
 
-# Save the gt table as an HTML file
-gt::gtsave(my_gt_table, filename = "my_table.html")
+# Round numeric columns to 2 decimal places
+descriptive_stats <- descriptive_stats %>%
+  mutate(across(where(is.numeric), ~round(., 2)))
 
-# Use webshot2 to convert the HTML to a PNG image
-webshot2::webshot("my_table.html", file = "my_table.png", zoom = 2)
+# Create and format the flextable
+inflation_table <- flextable(descriptive_stats) %>%
+  colformat_double(digits = 2) %>%  # Changed from 3 to 2
+  set_table_properties(width = 1, layout = "autofit") %>%
+  theme_zebra() %>%
+  add_header_row(values = "Descriptive Statistics for Inflation Data", colwidths = 3) %>%
+  align(align = "center", part = "all") %>%
+  set_header_labels(
+    Statistic = "Statistic",
+    `Overall Inflation` = "Overall Inflation",
+    `Egg Inflation` = "Egg Inflation"
+  )
+
+# Display the table
+inflation_table

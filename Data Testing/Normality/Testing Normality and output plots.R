@@ -138,8 +138,8 @@ print(shapiro_test_no_outliers)
 print(shapiro_test_egg_original)
 print(shapiro_test_egg_no_outliers)
 
-ggsave("qqplot_inflation.png", plot = qqplot_original, width = 12, height = 8, dpi = 300)
-ggsave("qqplot_egg_inflation.png", plot = qqplot_egg_original, width = 12, height = 8, dpi = 300)
-ggsave("histogram_inflation.png", plot = histogram_original, width = 12, height = 8, dpi = 300)
-ggsave("histogram_egg_inflation.png", plot = histogram_egg_original, width = 12, height = 8, dpi = 300)
+ggsave("qqplot_inflation.png", plot = qqplot_original, width = 8, height = 5, dpi = 300)
+ggsave("qqplot_egg_inflation.png", plot = qqplot_egg_original, width = 8, height = 5, dpi = 300)
+ggsave("histogram_inflation.png", plot = histogram_original, width = 8, height = 5, dpi = 300)
+ggsave("histogram_egg_inflation.png", plot = histogram_egg_original, width = 8, height = 5, dpi = 300)
 

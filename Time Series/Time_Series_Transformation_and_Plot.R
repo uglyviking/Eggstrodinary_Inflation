@@ -66,16 +66,16 @@ time_series_plot_25 <- ggplot(inflation_long, aes(x = Date)) +
        color = "Measure") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_color_manual(values = c("Overall Inflation" = "#EB4B33", "Egg Inflation" = "#EBC531")) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
 
 #save png
-ggsave("inflation_timeseries_25.png", plot = time_series_plot_25, width = 12, height = 8, dpi = 300)
+ggsave("inflation_timeseries_25.png", plot = time_series_plot_25, width = 8, height = 5, dpi = 300)
 
 # Convert in plotlty and save as an HTML file
 #time_series_plot_interactive <- ggplotly(time_series_plot)
 #htmlwidgets::saveWidget(time_series_plot_interactive, "inflation_comparison_interactive.html")
 
-#repeat process for 4 years
+#repeat process for 5 years
 inflation_data_filtered <- inflation_data |>
   filter(Year > (max_year - 5))
 
@@ -131,7 +131,10 @@ time_series_plot_5 <- ggplot(inflation_long, aes(x = Date)) +
     date_labels = "%b\n%Y",
     expand = c(0.02, 0)
   ) +
-  scale_color_manual(values = c("Overall Inflation" = "#EB4B33", "Egg Inflation" = "#EBC531"))
+  scale_color_manual(values = c("Overall Inflation" = "#EB4B33", "Egg Inflation" = "#EBC531"))+
+  theme(legend.position = "bottom")
 
-ggsave("inflation_timeseries_5.png", plot = time_series_plot_5, width = 12, height = 8, dpi = 300)
+adf.test(inflation_long$Overall_Inflation)
+adf.test(inflation_long$Egg_Inflation)
 
+ggsave("inflation_timeseries_5.png", plot = time_series_plot_5, width = 8, height = 5, dpi = 300)
