@@ -4,7 +4,7 @@ library(dplyr)    # For data manipulation
 library(moments)  # For skewness and kurtosis calculations
 library(psych)    # For additional descriptive statistics
 library(lubridate) # For date manipulation
-library(flextable)
+library(gt)       # For creating tables)
 
 # Import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
@@ -122,22 +122,21 @@ ggsave("inflation_comparison_boxplot.png", boxplot_inflation_comparison, width =
 names(descriptive_stats)[names(descriptive_stats) == "Overall_Inflation"] <- "Overall Inflation"
 names(descriptive_stats)[names(descriptive_stats) == "Egg_Inflation"] <- "Egg Inflation"
 
-# Round numeric columns to 2 decimal places
-descriptive_stats <- descriptive_stats %>%
-  mutate(across(where(is.numeric), ~round(., 2)))
-
-# Create and format the flextable
-inflation_table <- flextable(descriptive_stats) %>%
-  colformat_double(digits = 2) %>%  # Changed from 3 to 2
-  set_table_properties(width = 1, layout = "autofit") %>%
-  theme_zebra() %>%
-  add_header_row(values = "Descriptive Statistics for Inflation Data", colwidths = 3) %>%
-  align(align = "center", part = "all") %>%
-  set_header_labels(
-    Statistic = "Statistic",
-    `Overall Inflation` = "Overall Inflation",
-    `Egg Inflation` = "Egg Inflation"
-  )
+# Create the gt table with a subtitle
+inflation_table <- gt(descriptive_stats) %>%
+  fmt_number(columns = c("Overall Inflation", "Egg Inflation"), decimals = 2) %>%
+  tab_header(
+    title = "Descriptive Statistics for Inflation Data",
+    subtitle = "Comparison of Overall Inflation and Egg Inflation"  # Add your desired subtitle here
+  ) %>%
+  opt_row_striping() %>%
+  opt_table_font(font = "Arial")
 
 # Display the table
-inflation_table
+print(inflation_table)
+
+# Save the table as an HTML file
+gtsave(inflation_table, filename = "inflation_table.html")
+
+# Use webshot2 to convert the HTML to a PNG image with 300 DPI
+webshot("inflation_table.html", file = "inflation_table.png", zoom = 2, vwidth = 1000, vheight = 800)

@@ -5,7 +5,7 @@ library(lubridate)
 library(ggplot2)
 library(plotly)
 library(tseries)
-
+library(lmtest)
 #import data
 inflation_data <- read.csv("Data/City_Inflation_Differences.csv")
 
@@ -67,6 +67,11 @@ time_series_plot_25 <- ggplot(inflation_long, aes(x = Date)) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_color_manual(values = c("Overall Inflation" = "#EB4B33", "Egg Inflation" = "#EBC531")) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+
+#granger test for predictive power
+granger_test_25 <- grangertest(overall_inflation_ts, egg_inflation_ts, order = 3)
+
+print(granger_test_25)
 
 #save png
 ggsave("inflation_timeseries_25.png", plot = time_series_plot_25, width = 8, height = 5, dpi = 300)
@@ -136,5 +141,10 @@ time_series_plot_5 <- ggplot(inflation_long, aes(x = Date)) +
 
 adf.test(inflation_long$Overall_Inflation)
 adf.test(inflation_long$Egg_Inflation)
+
+#granger test for predictive power
+granger_test_5 <- grangertest(overall_inflation_ts, egg_inflation_ts, order = 3)
+
+print(granger_test_5)
 
 ggsave("inflation_timeseries_5.png", plot = time_series_plot_5, width = 8, height = 5, dpi = 300)
