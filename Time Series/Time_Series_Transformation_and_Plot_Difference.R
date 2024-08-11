@@ -1,108 +1,101 @@
-library(tidyr)
-library(dplyr)
+# Load required libraries
+library(tidyverse)
 library(lubridate)
-library(ggplot2)
 library(tseries)
 
-#repeat process for 4 years
-inflation_data_filtered <- inflation_data |>
-  filter(Year > (max_year - 5))
+# Assuming 'inflation_data' is your original dataset
+# Filter data for the last 5 years (adjust as needed)
+inflation_data_filtered <- inflation_data %>%
+  filter(Year > max(Year) - 5)
 
-# Reshape the filtered data
-inflation_long <- inflation_data_filtered |>
+# Reshape the data
+inflation_long <- inflation_data_filtered %>%
   pivot_longer(
-    cols = c(ends_with("Percentage_Change"), Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec),
+    cols = c(ends_with("Percentage_Change"), Jan:Dec),
     names_to = "Month",
     values_to = "Inflation"
-  ) |>
+  ) %>%
   mutate(
-    Type = ifelse(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
-    Month = ifelse(Type == "Egg_Inflation", 
-                   sub("_Percentage_Change$", "", Month),
-                   Month),
+    Type = if_else(grepl("Percentage_Change$", Month), "Egg_Inflation", "Overall_Inflation"),
+    Month = if_else(Type == "Egg_Inflation", sub("_Percentage_Change$", "", Month), Month),
     Month = match(Month, month.abb),
     Date = ymd(paste(Year, Month, "01"))
-  ) |>
+  ) %>%
   pivot_wider(
     names_from = Type,
     values_from = Inflation
-  ) |>
-  arrange(Date) |>
-  select(Year, Month, Date, Egg_Inflation, Overall_Inflation)
-
-#remove NA values
-inflation_long <- inflation_long |>
+  ) %>%
+  arrange(Date) %>%
+  select(Date, Egg_Inflation, Overall_Inflation) %>%
   na.omit()
 
-# Extract egg inflation series
-egg_inflation <- ts(inflation_long$Egg_Inflation, frequency = 12)
+# Print summary of original data to check for negative or zero values
+print("Summary of original data:")
+print(summary(inflation_long))
 
-# Apply first-order differencing
-egg_inflation_diff <- diff(egg_inflation, differences = 1)
-
-# Test stationarity of the differenced series
-adf_result <- adf.test(egg_inflation_diff)
-print(adf_result)
-
-# Add differenced series to the dataframe
-inflation_long$Egg_Inflation_Diff <- c(NA, as.vector(egg_inflation_diff))
-
-# If still non-stationary, apply log transformation and then difference
-if (adf_result$p.value > 0.05) {
-  egg_inflation_log <- log(egg_inflation + 1)  # Adding 1 to handle possible zero values
-  egg_inflation_log_diff <- diff(egg_inflation_log, differences = 1)
-  adf_result_log <- adf.test(egg_inflation_log_diff)
-  print(adf_result_log)
-  
-  # Add log-differenced series to the dataframe
-  inflation_long$Egg_Inflation_Log_Diff <- c(NA, as.vector(egg_inflation_log_diff))
+# Function to create differenced and log-transformed series
+create_transformations <- function(data, column_name) {
+  data %>%
+    mutate(
+      !!paste0(column_name, "_Diff") := c(NA, diff(!!sym(column_name))),
+      !!paste0(column_name, "_Log") := log(!!sym(column_name) + abs(min(!!sym(column_name), na.rm = TRUE)) + 1)
+    )
 }
 
-# Plot original, differenced, and (if needed) log-differenced series
-par(mfrow = c(3, 1))
-plot(egg_inflation, main = "Original Egg Inflation")
-plot(egg_inflation_diff, main = "Differenced Egg Inflation")
-if (exists("egg_inflation_log_diff")) {
-  plot(egg_inflation_log_diff, main = "Log-Differenced Egg Inflation")
-}
+# Apply transformations
+inflation_transformed <- inflation_long %>%
+  create_transformations("Egg_Inflation") %>%
+  create_transformations("Overall_Inflation")
 
-# Create the ggplot
-p <- ggplot(inflation_long, aes(x = Date)) +
+# Print summary of transformed data
+print("Summary of transformed data:")
+print(summary(inflation_transformed))
+
+# Create the plot
+p <- ggplot(inflation_transformed, aes(x = Date)) +
   geom_line(aes(y = Overall_Inflation, color = "Overall Inflation")) +
-  geom_line(aes(y = Egg_Inflation, color = "Original Egg Inflation")) +
-  geom_line(aes(y = Egg_Inflation_Diff, color = "Differenced Egg Inflation"))
-
-# Add log-differenced series if it exists
-if ("Egg_Inflation_Log_Diff" %in% colnames(inflation_long)) {
-  p <- p + geom_line(aes(y = Egg_Inflation_Log_Diff, color = "Log-Differenced Egg Inflation"))
-}
-
-# Finalize the plot
-p <- p + 
-  labs(title = "Comparison of Series (Last 5 Years) With Differenced Egg Inflation", 
-       y = "Value", 
-       color = "Measure") +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b\n%Y", expand = c(0.02, 0)) +
-  scale_color_manual(values = c("Overall Inflation" = "#EB4B33", 
-                                "Original Egg Inflation" = "#EBC531",
-                                "Differenced Egg Inflation" = "#31B6EB",
-                                "Log-Differenced Egg Inflation" = "#31EB98")) +
-  theme(legend.position = "bottom")
+  geom_line(aes(y = Egg_Inflation, color = "Egg Inflation")) +
+  geom_line(aes(y = Overall_Inflation_Diff, color = "Differenced Overall Inflation")) +
+  geom_line(aes(y = Egg_Inflation_Diff, color = "Differenced Egg Inflation")) +
+  geom_line(aes(y = Overall_Inflation_Log, color = "Log Overall Inflation")) +
+  geom_line(aes(y = Egg_Inflation_Log, color = "Log Egg Inflation")) +
+  labs(
+    title = "Comparison of Inflation Series (Last 5 Years)",
+    y = "Value",
+    color = "Measure"
+  ) +
+  scale_x_date(date_breaks = "6 months", date_labels = "%b %Y", expand = c(0.02, 0)) +
+  scale_color_manual(values = c(
+    "Overall Inflation" = "#EB4B33",
+    "Egg Inflation" = "#EBC531",
+    "Differenced Overall Inflation" = "#31B6EB",
+    "Differenced Egg Inflation" = "#31EB98",
+    "Log Overall Inflation" = "#9B31EB",
+    "Log Egg Inflation" = "#EB3193"
+  )) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 
 # Display the plot
 print(p)
 
 # Save the plot
-ggsave("inflation_timeseries_5_difference.png", plot = p, width = 8, height = 5, dpi = 300)
+ggsave("comprehensive_inflation_analysis.png", plot = p, width = 8, height = 5, dpi = 300)
 
 # Print summary statistics
-summary(inflation_long[, c("Overall_Inflation", "Egg_Inflation", "Egg_Inflation_Diff")])
-if ("Egg_Inflation_Log_Diff" %in% colnames(inflation_long)) {
-  summary(inflation_long$Egg_Inflation_Log_Diff)
-}
+summary(inflation_transformed)
 
-Version 2 of 2
+# Optionally, perform ADF tests on the series
+adf_tests <- list(
+  Egg_Inflation = adf.test(inflation_transformed$Egg_Inflation),
+  Overall_Inflation = adf.test(inflation_transformed$Overall_Inflation),
+  Egg_Inflation_Diff = adf.test(inflation_transformed$Egg_Inflation_Diff, na.action = na.omit),
+  Overall_Inflation_Diff = adf.test(inflation_transformed$Overall_Inflation_Diff, na.action = na.omit),
+  Egg_Inflation_Log = adf.test(inflation_transformed$Egg_Inflation_Log),
+  Overall_Inflation_Log = adf.test(inflation_transformed$Overall_Inflation_Log)
+)
 
-
-
-
+# Print ADF test results
+print(adf_tests)

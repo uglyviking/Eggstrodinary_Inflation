@@ -69,7 +69,7 @@ time_series_plot_25 <- ggplot(inflation_long, aes(x = Date)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
 
 #granger test for predictive power
-granger_test_25 <- grangertest(overall_inflation_ts, egg_inflation_ts, order = 3)
+granger_test_25 <- grangertest(egg_inflation_ts, overall_inflation_ts, order = 3)
 
 print(granger_test_25)
 
@@ -143,8 +143,9 @@ adf.test(inflation_long$Overall_Inflation)
 adf.test(inflation_long$Egg_Inflation)
 
 #granger test for predictive power
-granger_test_5 <- grangertest(overall_inflation_ts, egg_inflation_ts, order = 3)
+granger_test_5 <- grangertest(egg_inflation_ts, overall_inflation_ts, order = 3)
 
+print(granger_test_25)
 print(granger_test_5)
 
 ggsave("inflation_timeseries_5.png", plot = time_series_plot_5, width = 8, height = 5, dpi = 300)
